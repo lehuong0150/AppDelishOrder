@@ -10,9 +10,9 @@
         android:title="Đơn hàng"
         />
     <item
-        android:id="@+id/menu_History"
-        android:icon="@drawable/baseline_history_24"
-        android:title="Lịch sử" />
+        android:id="@+id/menu_Notification"
+        android:icon="@drawable/baseline_notifications_active_24"
+        android:title="Thông báo " />
     <item
         android:id="@+id/menu_Profile"
         android:icon="@drawable/baseline_perm_contact_calendar_24"

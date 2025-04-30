@@ -1,5 +1,6 @@
 package com.example.appdelishorder.View.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,41 +13,58 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.appdelishorder.Adapter.adapterCategory;
 import com.example.appdelishorder.Adapter.adapterProduct;
 import com.example.appdelishorder.Contract.categoryContract;
+import com.example.appdelishorder.Contract.customerContract;
 import com.example.appdelishorder.Contract.productContract;
 import com.example.appdelishorder.Model.Category;
+import com.example.appdelishorder.Model.Comment;
+import com.example.appdelishorder.Model.Customer;
 import com.example.appdelishorder.Model.Product;
 import com.example.appdelishorder.Presenter.categoryPresenter;
+import com.example.appdelishorder.Presenter.customerPresenter;
 import com.example.appdelishorder.Presenter.productPresenter;
 import com.example.appdelishorder.R;
+import com.example.appdelishorder.Utils.SessionManager;
+import com.example.appdelishorder.View.Activities.CartActivity;
+import com.example.appdelishorder.View.Activities.ProductDetailActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HomeFragment extends Fragment implements categoryContract.View , productContract.View{
+public class HomeFragment extends Fragment implements categoryContract.View , productContract.View , customerContract.View{
     private RecyclerView recyclerListCategory,recyclerListProduct;
-    private TextView txtSeeAll;
+    private Spinner spinnerSortByDate, spinnerSortByPrice;
+    private TextView txtSeeAll, txtNameCustomer;
+    private CircleImageView imageAvatar;
     private EditText edSearch;
-    private ImageButton btnFilter;
+    private ImageButton btnFilter,btnCart;
     private ProgressBar progressBarCategory, progressBarProduct;
     private adapterCategory categoryAdapter;
     private adapterProduct adapterProduct;
     private categoryPresenter presenterCategory;
     private productPresenter presenterProduct;
+    private customerContract.Presenter presenterCustomer;
+    private String email, directionDate, directionPrice;
+    private Customer currentCustomer;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -96,10 +114,22 @@ public class HomeFragment extends Fragment implements categoryContract.View , pr
         //danh sach danh muc
         btnFilter = rootView.findViewById(R.id.btn_filter);
         edSearch = rootView.findViewById(R.id.ed_search);
+        btnCart = rootView.findViewById(R.id.btn_cart);
+        spinnerSortByDate = rootView.findViewById(R.id.dateSpinner);
+        spinnerSortByPrice = rootView.findViewById(R.id.priceSpinner);
         txtSeeAll = rootView.findViewById(R.id.btnSeeAll);
+        imageAvatar = rootView.findViewById(R.id.image_avt);
+        txtNameCustomer = rootView.findViewById(R.id.txt_name);
         recyclerListCategory = rootView.findViewById(R.id.categoryView);
         progressBarCategory = rootView.findViewById(R.id.progressBarCategory);
         recyclerListCategory.setLayoutManager(new GridLayoutManager(getContext(), 3)); // 3 cột trong mỗi hàng
+
+        SessionManager sessionManager = new SessionManager(requireContext());
+        email = sessionManager.getEmail();
+        Log.d("EmailHome", "onCreateView: " + email);
+        // thong tin khach hang
+        presenterCustomer = new customerPresenter(HomeFragment.this);
+        presenterCustomer.loadCustomerInfo(email);
 
         //danh sach san pham
         recyclerListProduct = rootView.findViewById(R.id.bestFoodView);
@@ -115,6 +145,7 @@ public class HomeFragment extends Fragment implements categoryContract.View , pr
         presenterProduct.loadProducts(); // Gọi API
 
         //xem tat ca sp
+        txtSeeAll.setClickable(true);
         txtSeeAll.setOnClickListener(v -> {
             presenterProduct.loadProducts(); // Gọi API lấy toàn bộ sản phẩm
         });
@@ -139,6 +170,56 @@ public class HomeFragment extends Fragment implements categoryContract.View , pr
             @Override
             public void afterTextChanged(Editable editable) { }
         });
+
+        // Xử lý sự kiện nhấn nút giỏ hàng
+        btnCart.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), CartActivity.class);
+            startActivity(intent);
+        });
+
+        //Loc sp theo ngay
+        // Set listeners for the spinners
+        spinnerSortByDate.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                directionDate = (String) parent.getItemAtPosition(position);
+                if (directionDate.equals("Mới cập nhật")) {
+                    // Nếu chọn "Mới nhất", gọi API để tải sản phẩm theo ngày giảm dần
+                    presenterProduct.fitterProductsBySortDate("desc");
+                } else {
+                    // Nếu chọn "Cũ nhất", gọi API để tải sản phẩm theo ngày tăng dần
+                    presenterProduct.fitterProductsBySortDate("asc");
+                }
+                // Gọi API để tải sản phẩm theo ngày
+                presenterProduct.fitterProductsBySortDate(directionDate);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+        // Loc sp theo gia
+        //set listeners fot the spinners
+        spinnerSortByPrice.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                directionPrice = (String) parent.getItemAtPosition(position);
+                if (directionPrice.equals("Giá thấp đến cao")) {
+                    directionPrice = "asc";
+                    // Gọi API để tải sản phẩm theo ngày
+                    presenterProduct.fitterProductsBySortPrice(directionPrice);
+                } else if (directionPrice.equals("Giá cao đến thấp")) {
+                    directionPrice = "desc";
+                    // Gọi API để tải sản phẩm theo ngày
+                    presenterProduct.fitterProductsBySortPrice(directionPrice);
+                }
+                else  if (directionPrice.equals("Lọc theo giá")) {
+                    presenterProduct.loadProducts();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
         return rootView;
     }
 
@@ -149,6 +230,33 @@ public class HomeFragment extends Fragment implements categoryContract.View , pr
 
     @Override
     public void hideLoading() {
+
+    }
+
+    @Override
+    public void displayCustomerInfo(Customer customer) {
+        currentCustomer = customer;
+
+        // Điền thông tin của khách hàng vào form
+        if (customer != null) {
+            txtNameCustomer.setText(customer.getName());
+            if (isAdded() && getContext() != null) {
+                Glide.with(getContext())
+                        .load(customer.getAvatar())
+                        .placeholder(R.drawable.ex_1)
+                        .error(R.drawable.ex_1)
+                        .into(imageAvatar);
+            }
+        }
+    }
+
+    @Override
+    public void showUpdateSuccess(String message) {
+
+    }
+
+    @Override
+    public void showUpdateError(String error) {
 
     }
 
@@ -178,8 +286,29 @@ public class HomeFragment extends Fragment implements categoryContract.View , pr
     @Override
     public void showProducts(List<Product> products) {
         progressBarProduct.setVisibility(View.GONE);
-        adapterProduct =  new adapterProduct(getContext(),products);
+        adapterProduct =  new adapterProduct(getContext(), products, new adapterProduct.OnProductClickListener() {
+            @Override
+            public void onProductClick(Product product) {
+                Intent intent = new Intent(getContext(), ProductDetailActivity.class);
+                intent.putExtra("PRODUCT_ID", product.getId());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onAddToCartClick(Product product) {
+                // Xử lý thêm sản phẩm vào giỏ hàng
+                // Bạn có thể gọi một phương thức trong presenter để thực hiện việc này
+                Intent intent = new Intent(getContext(), CartActivity.class);
+                intent.putExtra("PRODUCT_ID", product.getId());
+                startActivity(intent);
+            }
+        });
         recyclerListProduct.setAdapter(adapterProduct);
+    }
+
+    @Override
+    public void showProduct(Product product) {
+
     }
 
     @Override
@@ -187,7 +316,5 @@ public class HomeFragment extends Fragment implements categoryContract.View , pr
         progressBarProduct.setVisibility(View.VISIBLE);
         Log.d("ShowError", "showError: "+ message);
     }
-
-
 
 }

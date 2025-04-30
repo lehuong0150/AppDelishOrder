@@ -6,19 +6,34 @@ public class Customer {
     private int id;
     private String name;
     private String phone;
+    private String avatar;
     private String address;
     private String gender;
-    private Date birthdate;
+    private String birthdate;
     private String accountEmail;
 
-    public Customer(int id, String name, String phone, String address, String gender, Date birthdate, String accountEmail) {
+    public Customer(int id, String name, String avatar, String phone, String address, String gender, String birthdate, String accountEmail) {
         this.id = id;
         this.name = name;
         this.phone = phone;
+        this.avatar = avatar;
         this.address = address;
         this.gender = gender;
         this.birthdate = birthdate;
         this.accountEmail = accountEmail;
+    }
+    public Customer(String name, String avatar, String phone, String address, String gender, String birthdate, String accountEmail) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+        this.avatar = avatar;
+        this.address = address;
+        this.gender = gender;
+        this.birthdate = birthdate;
+        this.accountEmail = accountEmail;
+    }
+
+    public Customer() {
     }
 
     public int getId() {
@@ -45,6 +60,10 @@ public class Customer {
         this.phone = phone;
     }
 
+    public String getAvatar() { return avatar;}
+
+    public void setAvatar(String avatar) { this.avatar = avatar;}
+
     public String getAddress() {
         return address;
     }
@@ -61,11 +80,11 @@ public class Customer {
         this.gender = gender;
     }
 
-    public Date getBirthdate() {
+    public String getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(Date birthdate) {
+    public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
     }
 

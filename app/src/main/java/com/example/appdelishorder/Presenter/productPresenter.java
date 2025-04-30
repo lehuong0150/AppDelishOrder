@@ -1,6 +1,7 @@
 package com.example.appdelishorder.Presenter;
 
 import com.example.appdelishorder.Contract.productContract;
+import com.example.appdelishorder.Model.Comment;
 import com.example.appdelishorder.Model.Product;
 import com.example.appdelishorder.Retrofit.APIClient;
 import com.example.appdelishorder.Retrofit.ApiService;
@@ -90,9 +91,50 @@ public class productPresenter implements productContract.Presenter {
         });
     }
 
+    @Override
+    public void fitterProductsBySortDate(String direction) {
+        Call<List<Product>> call = apiService.getProductsSortedByDate(direction);
+        call.enqueue(new Callback<List<Product>>() {
+
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    view.showProducts(response.body());
+                } else {
+                    view.showErrorProduct("Lỗi tải danh sách sản phẩm");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                view.showErrorProduct("Lỗi kết nối đến server");
+            }
+        });
+    }
+
+    @Override
+    public void fitterProductsBySortPrice(String direction) {
+        Call<List<Product>> call = apiService.getProductsSortedByPrice(direction);
+        call.enqueue(new Callback<List<Product>>() {
+
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    view.showProducts(response.body());
+                } else {
+                    view.showErrorProduct("Lỗi tải danh sách sản phẩm");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                view.showErrorProduct("Lỗi kết nối đến server");
+            }
+        });
+    }
 
     @Override
     public void onDetach() {
-
+        view = null;
     }
 }

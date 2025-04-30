@@ -61,4 +61,12 @@
         <item name="android:textColor">#000</item>
         <item name="android:drawableEnd">@drawable/baseline_arrow_right_24</item>
     </style>
+    <!--Style cho ratingbar -->
+    <style name="Theme.YourAppName" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Các thuộc tính theme hiện tại -->
+
+        <!-- Thêm thuộc tính màu sắc RatingBar -->
+        <item name="colorControlNormal">@color/star_empty</item>
+        <item name="colorControlActivated">@color/star_filled</item>
+    </style>
 </resources>

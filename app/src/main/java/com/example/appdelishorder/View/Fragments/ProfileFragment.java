@@ -1,66 +1,121 @@
 package com.example.appdelishorder.View.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
+import com.bumptech.glide.Glide;
+import com.example.appdelishorder.Contract.customerContract;
+import com.example.appdelishorder.Model.Customer;
+import com.example.appdelishorder.Presenter.customerPresenter;
 import com.example.appdelishorder.R;
+import com.example.appdelishorder.Utils.SessionManager;
+import com.example.appdelishorder.View.Activities.LoginActivity;
+import com.example.appdelishorder.View.Activities.ProfileActivity;
+import com.example.appdelishorder.View.Activities.SettingsActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class ProfileFragment extends Fragment {
+import de.hdodenhof.circleimageview.CircleImageView;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class ProfileFragment extends Fragment implements customerContract.View {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ProfileFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProfileFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private LinearLayout personalInfoOption, orderHistoryOption, settingsOption, logoutOption;
+    private TextView txtName;
+    private CircleImageView profileImage;
+    private customerContract.Presenter presenter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        // Initialize menu options
+        personalInfoOption = view.findViewById(R.id.personalInfoOption);
+        orderHistoryOption = view.findViewById(R.id.orderHistoryOption);
+        settingsOption = view.findViewById(R.id.settingsOption);
+        logoutOption = view.findViewById(R.id.logoutOption);
+        txtName = view.findViewById(R.id.tvUserName);
+        profileImage = view.findViewById(R.id.imgProfile);
+
+        presenter = new customerPresenter(this);
+
+        // Set default user name
+        SessionManager sessionManager = new SessionManager(getContext());
+        String email = sessionManager.getEmail();
+
+        // Assuming you have a method to get user name from email
+        presenter.loadCustomerInfo(email);
+
+        // Set click listeners
+        personalInfoOption.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Thông tin cá nhân clicked", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), ProfileActivity.class);
+            startActivity(intent);
+        });
+
+        orderHistoryOption.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Lịch sử đơn hàng clicked", Toast.LENGTH_SHORT).show();
+            // Add logic to navigate to order history screen
+            Intent intent = new Intent(getContext(), OrderHistoryFragment.class);
+            startActivity(intent);
+        });
+
+        settingsOption.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Cài đặt clicked", Toast.LENGTH_SHORT).show();
+            // Add logic to navigate to settings screen
+            Intent intent = new Intent(getContext(), SettingsActivity.class);
+            startActivity(intent);
+        });
+
+        logoutOption.setOnClickListener(v -> {
+            Toast.makeText(getContext(), "Đăng xuất clicked", Toast.LENGTH_SHORT).show();
+            // Add logic to handle logout
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        });
+        return view;
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void displayCustomerInfo(Customer customer) {
+        txtName.setText(customer.getName());
+        // Assuming you have a method to load image from URL
+        Glide.with(getContext())
+                .load(customer.getAvatar())
+                .placeholder(R.drawable.baseline_perm_contact_calendar_24)
+                .into(profileImage);
+    }
+
+    @Override
+    public void showUpdateSuccess(String message) {
+
+    }
+
+    @Override
+    public void showUpdateError(String error) {
+
+    }
+
+    @Override
+    public void showError(String message) {
+
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_status_all"
+        android:title="Tất cả" />
+    <item
+        android:id="@+id/menu_status_cancelled"
+        android:title="Đã hủy" />
+    <item
+        android:id="@+id/menu_status_completed"
+        android:title="Hoàn thành" />
+</menu>

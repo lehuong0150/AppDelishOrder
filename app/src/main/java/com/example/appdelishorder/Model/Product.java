@@ -1,9 +1,12 @@
 package com.example.appdelishorder.Model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product {
     private int id;
     private String name;
-    private int price;
+    private float price;
     private String descript;
     private int quantity;
     private String imageProduct;
@@ -12,8 +15,10 @@ public class Product {
     private boolean isAvailable;
     private String createdAt;
 
+    private transient float rating;
 
-    public Product(String name, int price, String descript, int quantity, String imageProduct, String categoryId, String categoryName, boolean isAvailable, String createdAt) {
+
+    public Product(String name, float price, String descript, int quantity, String imageProduct, String categoryId, String categoryName, boolean isAvailable, String createdAt) {
         this.name = name;
         this.price = price;
         this.descript = descript;
@@ -23,6 +28,7 @@ public class Product {
         this.categoryName = categoryName;
         this.isAvailable = isAvailable;
         this.createdAt = createdAt;
+        this.rating = 0;
     }
 
     public int getId() {
@@ -41,11 +47,11 @@ public class Product {
         this.name = name;
     }
 
-    public int getPrice() {
+    public float getPrice() {
         return price;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(float price) {
         this.price = price;
     }
 
@@ -103,5 +109,13 @@ public class Product {
 
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public float getRating() {
+        return rating;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
     }
 }

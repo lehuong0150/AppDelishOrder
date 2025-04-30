@@ -2,19 +2,15 @@ package com.example.appdelishorder.View.Activities;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.appdelishorder.R;
-import com.example.appdelishorder.View.Fragments.HistoryFragment;
+import com.example.appdelishorder.View.Fragments.NotificationFragment;
 import com.example.appdelishorder.View.Fragments.HomeFragment;
 import com.example.appdelishorder.View.Fragments.OrderFragment;
 import com.example.appdelishorder.View.Fragments.ProfileFragment;
@@ -23,7 +19,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class HomeActivity extends AppCompatActivity {
     private BottomNavigationView menuBottom;
     private enum CurrentPage {
-        HOME, ORDER, HISTORY, PROFILE
+        HOME, ORDER, NOTIFICATION, PROFILE
     }
     private CurrentPage currentPage = CurrentPage.HOME;
     @Override
@@ -53,10 +49,10 @@ public class HomeActivity extends AppCompatActivity {
                     menuBottom.setSelectedItemId(R.id.menu_Order);
 
                 }
-                } else if (fragmentTag.equals("history")) {
-                    replaceFragment(new HistoryFragment());
-                    currentPage = CurrentPage.HISTORY;
-                    menuBottom.setSelectedItemId(R.id.menu_History);
+                } else if (fragmentTag.equals("notification")) {
+                    replaceFragment(new NotificationFragment());
+                    currentPage = CurrentPage.NOTIFICATION;
+                    menuBottom.setSelectedItemId(R.id.menu_Notification);
 
                 }else if (fragmentTag.equals("profile")) {
                     replaceFragment(new ProfileFragment());
@@ -74,9 +70,9 @@ public class HomeActivity extends AppCompatActivity {
                 replaceFragment(new OrderFragment());
                 currentPage = CurrentPage.ORDER;
 
-            } else if (i == R.id.menu_History) {
-                replaceFragment(new HistoryFragment());
-                currentPage = CurrentPage.HISTORY;
+            } else if (i == R.id.menu_Notification) {
+                replaceFragment(new NotificationFragment());
+                currentPage = CurrentPage.NOTIFICATION;
             } else if (i == R.id.menu_Profile) {
                 replaceFragment(new ProfileFragment());
                 currentPage = CurrentPage.PROFILE;

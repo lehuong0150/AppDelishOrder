@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Các style khác -->
+
+    <style name="YellowRatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:progressTint">@color/star_filled</item>
+        <item name="android:secondaryProgressTint">@color/star_filled</item>
+        <item name="android:progressBackgroundTint">@color/star_empty</item>
+    </style>
+</resources>

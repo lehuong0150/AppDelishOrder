@@ -4,11 +4,19 @@ public class Account {
     private String email;
     private String password;
     private String fullname;
+    private Customer customer;
+
 
     public Account(String email, String password, String fullname) {
         this.email = email;
         this.password = password;
         this.fullname = fullname;
+    }
+    public Account(String email, String password, String fullname, Customer customer) {
+        this.email = email;
+        this.password = password;
+        this.fullname = fullname;
+        this.customer = customer;
     }
 
     public String getEmail() {
@@ -33,6 +41,14 @@ public class Account {
 
     public void setFullname(String fullname) {
         this.fullname = fullname;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
 

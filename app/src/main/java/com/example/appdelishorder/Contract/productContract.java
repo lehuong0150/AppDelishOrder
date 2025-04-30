@@ -1,5 +1,6 @@
 package com.example.appdelishorder.Contract;
 
+import com.example.appdelishorder.Model.Comment;
 import com.example.appdelishorder.Model.Product;
 
 import java.util.List;
@@ -9,6 +10,7 @@ public interface productContract {
         void showLoading();
         void hideLoading();
         void showProducts(List<Product> products);
+        void showProduct(Product product);
         void showErrorProduct(String message);
     }
 
@@ -16,6 +18,8 @@ public interface productContract {
         void loadProducts();
         void loadProductsByCategory(String categoryId);
         void searchProducts(String query);
+        void fitterProductsBySortDate(String direction);
+        void fitterProductsBySortPrice(String direction);
         void onDetach();
     }
 }

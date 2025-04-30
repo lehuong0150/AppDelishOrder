@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppDelishOrder"
         tools:targetApi="31">
+        <activity
+            android:name=".View.Activities.OrderDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".View.Activities.EvaluateActivity"
+            android:exported="false" />
         <activity
             android:name=".View.Activities.ProductDetailActivity"
             android:exported="false" />
@@ -20,7 +30,7 @@
             android:name=".View.Activities.CartActivity"
             android:exported="false" />
         <activity
-            android:name=".View.Activities.SettingActivity"
+            android:name=".View.Activities.SettingsActivity"
             android:exported="false" />
         <activity
             android:name=".View.Activities.ProfileActivity"
@@ -32,10 +42,10 @@
             android:name=".View.Activities.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".View.Activities.MainActivity"
+            android:name=".View.Activities.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".View.Activities.HomeActivity"
+            android:name=".View.Activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -22,6 +22,7 @@ import com.example.appdelishorder.Presenter.accountPresenter;
 import com.example.appdelishorder.R;
 import com.example.appdelishorder.Retrofit.APIClient;
 import com.example.appdelishorder.Retrofit.ApiService;
+import com.example.appdelishorder.Utils.SessionManager;
 
 public class LoginActivity extends AppCompatActivity implements  accountContract.View{
     private EditText emailInput, passwordInput;
@@ -89,6 +90,10 @@ public class LoginActivity extends AppCompatActivity implements  accountContract
         progressBar.setVisibility(View.GONE);
         Toast.makeText(this, token, Toast.LENGTH_SHORT).show();
 
+        // Save the email in SessionManager
+        SessionManager sessionManager = new SessionManager(this);
+        sessionManager.saveEmail(emailInput.getText().toString().trim());
+        sessionManager.saveToken(token);
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
     }

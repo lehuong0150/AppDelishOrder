@@ -23,10 +23,18 @@ import java.util.List;
 public class adapterProduct extends  RecyclerView.Adapter<adapterProduct.ProductViewHolder> {
     private Context context;
     private List<Product> productList;
-    public adapterProduct(Context context, List<Product> productList) {
+    private OnProductClickListener onProductClickListener;
+    public adapterProduct(Context context, List<Product> productList,  OnProductClickListener listener) {
         this.context = context;
         this.productList = productList;
+        this.onProductClickListener = listener;
     }
+    // Interface for click listener
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
+        void onAddToCartClick(Product product);
+    }
+
     @NonNull
     @Override
     public ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -46,6 +54,17 @@ public class adapterProduct extends  RecyclerView.Adapter<adapterProduct.Product
         } else {
             holder.frameSoldOut.setVisibility(View.GONE);
         }
+        //set click listener on the entrie item view
+        holder.itemView.setOnClickListener(v -> {
+            if (onProductClickListener != null) {
+                onProductClickListener.onProductClick(product);
+            }
+        });
+        holder.btnAddCart.setOnClickListener(v -> {
+            if (onProductClickListener != null) {
+                onProductClickListener.onAddToCartClick(product);
+            }
+        });
     }
 
     @Override
