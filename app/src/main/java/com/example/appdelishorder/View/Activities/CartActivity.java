@@ -330,7 +330,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
                 .format(new Date()));
         order.setStatus(0); // Giả sử 1 là trạng thái "Đã đặt hàng" hoặc "Chờ xác nhận"
         order.setAccountEmail(email); // Lấy email của user hiện tại đã đăng nhập
-        order.setPaymentMethod(selectedPaymentMethod.equals("Tiền mặt") ? "Cash" : "MoMo");
+        order.setPaymentMethod(selectedPaymentMethod.equals("Tiền mặt") ? "Tiền mặt" : "MoMo");
         order.setPaymentStatus(selectedPaymentMethod.equals("Tiền mặt") ? "Chưa thanh toán" : "Đã thanh toán");
         order.setTotalPrice(totalPrice);
         order.setRate(false);
