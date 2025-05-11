@@ -44,4 +44,33 @@
             android:textSize="12sp" />
 
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="5dp"
+        android:gravity="end">
+
+        <ImageButton
+            android:id="@+id/btnMarkAsRead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã đọc"
+            android:src="@drawable/baseline_mark_chat_read_24"
+            android:padding="4dp"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnDeleteNotification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xóa"
+            android:padding="4dp"
+            android:src="@drawable/baseline_delete_forever_24"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/white" />
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

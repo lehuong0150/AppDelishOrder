@@ -4,22 +4,21 @@ package com.example.appdelishorder.Model;
 import java.util.Date;
 
 public class Notification {
-    private int id;
     private String title;
     private String message;
-    private Date timestamp;
+    private long timestamp;
     private boolean isRead;
     private String type; // order_new, order_status, etc.
 
     public Notification() {
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public Notification(String title, String message, long timestamp, boolean isRead, String type) {
+        this.title = title;
+        this.message = message;
+        this.timestamp = timestamp;
+        this.isRead = isRead;
+        this.type = type;
     }
 
     public String getTitle() {
@@ -38,11 +37,11 @@ public class Notification {
         this.message = message;
     }
 
-    public Date getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 

@@ -3,6 +3,7 @@ package com.example.appdelishorder.View.Activities;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,11 +19,17 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.appdelishorder.Contract.accountContract;
 import com.example.appdelishorder.Model.Account;
+import com.example.appdelishorder.Model.UpdateTokenRequest;
 import com.example.appdelishorder.Presenter.accountPresenter;
 import com.example.appdelishorder.R;
 import com.example.appdelishorder.Retrofit.APIClient;
 import com.example.appdelishorder.Retrofit.ApiService;
 import com.example.appdelishorder.Utils.SessionManager;
+import com.google.firebase.messaging.FirebaseMessaging;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements  accountContract.View{
     private EditText emailInput, passwordInput;
@@ -92,8 +99,27 @@ public class LoginActivity extends AppCompatActivity implements  accountContract
 
         // Save the email in SessionManager
         SessionManager sessionManager = new SessionManager(this);
-        sessionManager.saveEmail(emailInput.getText().toString().trim());
+        String email = emailInput.getText().toString().trim();
+        sessionManager.saveEmail(email);
         sessionManager.saveToken(token);
+
+        // Lấy Firebase Token và gửi lên server
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.d("FCM", "Lấy token FCM không thành công", task.getException());
+                        return;
+                    }
+
+                    // Lấy token FCM
+                    String firebaseToken = task.getResult();
+                    Log.d("FCM", "Firebase Token: " + firebaseToken);
+
+                    // Gửi token FCM lên server
+                    sendTokenToServer(email, firebaseToken);
+                });
+
+        // Chuyển đến HomeActivity
         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
         startActivity(intent);
     }
@@ -101,6 +127,20 @@ public class LoginActivity extends AppCompatActivity implements  accountContract
     @Override
     public void showLoginError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Lấy token FCM không thành công", task.getException());
+                        return;
+                    }
+
+                    // Lấy token FCM mới
+                    String token = task.getResult();
+                    Log.d("FCM", "Token: " + token);
+
+                    // Gửi token đến server
+                    sendTokenToServer(emailInput.toString(), token);
+                });
     }
 
     @Override
@@ -121,6 +161,27 @@ public class LoginActivity extends AppCompatActivity implements  accountContract
     @Override
     public void showRegisterError(String error) {
 
+    }
+    private void sendTokenToServer(String email, String firebaseToken) {
+        ApiService apiService = APIClient.getClient().create(ApiService.class);
+        UpdateTokenRequest request = new UpdateTokenRequest(email, firebaseToken);
+
+        Call<Void> call = apiService.updateFirebaseToken(request);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d("FCM", "Token đã được cập nhật thành công trên server.");
+                } else {
+                    Log.e("FCM", "Lỗi khi cập nhật token trên server: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("FCM", "Lỗi khi gửi token lên server: " + t.getMessage());
+            }
+        });
     }
 
 }

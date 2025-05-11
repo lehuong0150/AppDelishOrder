@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "959930103221",
+    "project_id": "delishorderfood",
+    "storage_bucket": "delishorderfood.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959930103221:android:3852715410792297e055fc",
+        "android_client_info": {
+          "package_name": "com.example.appdelishorder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALHjgfNWWBaZhPPMwwaPqfJhmBzBeQuuA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

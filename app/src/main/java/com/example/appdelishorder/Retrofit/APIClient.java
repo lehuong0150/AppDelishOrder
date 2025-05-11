@@ -18,7 +18,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
-    private static final String BASE_URL = "http://192.168.1.8:7010/api/";  // Đổi thành URL server thực tế
+    private static final String BASE_URL = "http://192.168.1.79:7010/api/";  // Đổi thành URL server thực tế
     private static Retrofit retrofit;
 
     public static Retrofit getClient() {
@@ -56,7 +56,7 @@ public class APIClient {
                     .create();
 
             retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.1.8:7010/api/") // Đặt URL API của bạn tại đây
+                    .baseUrl("http://192.168.1.79:7010/api/") // Đặt URL API của bạn tại đây
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     .build();

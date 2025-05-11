@@ -1,10 +1,10 @@
-// Adapter/adapterNotification.java
 package com.example.appdelishorder.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,17 +22,26 @@ public class adapterNotification extends RecyclerView.Adapter<adapterNotificatio
 
     private Context context;
     private List<Notification> notifications;
-    private OnNotificationClickListener listener;
+    private OnNotificationClickListener clickListener;
+    private OnNotificationActionListener actionListener;
 
-    // Interface cho sự kiện click
+    // Interface cho sự kiện click vào thông báo
     public interface OnNotificationClickListener {
         void onNotificationClick(Notification notification);
     }
 
-    public adapterNotification(Context context, List<Notification> notifications, OnNotificationClickListener listener) {
+    // Interface cho sự kiện xóa thông báo
+    public interface OnNotificationActionListener {
+        void onDeleteNotification(int position);
+    }
+
+    public adapterNotification(Context context, List<Notification> notifications,
+                               OnNotificationClickListener clickListener,
+                               OnNotificationActionListener actionListener) {
         this.context = context;
         this.notifications = notifications;
-        this.listener = listener;
+        this.clickListener = clickListener;
+        this.actionListener = actionListener;
     }
 
     @NonNull
@@ -46,10 +55,9 @@ public class adapterNotification extends RecyclerView.Adapter<adapterNotificatio
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Notification notification = notifications.get(position);
 
+        // Hiển thị tiêu đề, nội dung và thời gian thông báo
         holder.tvTitle.setText(notification.getTitle());
         holder.tvMessage.setText(notification.getMessage());
-
-        // Format thời gian
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         holder.tvTime.setText(sdf.format(notification.getTimestamp()));
 
@@ -62,6 +70,20 @@ public class adapterNotification extends RecyclerView.Adapter<adapterNotificatio
             holder.tvTitle.setTextColor(ContextCompat.getColor(context, R.color.text_light));
         }
 
+        // Xử lý nút "Đánh dấu đã đọc"
+        holder.btnMarkAsRead.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onNotificationClick(notification); // Gọi callback để xử lý đánh dấu đã đọc
+            }
+        });
+
+        // Xử lý nút "Xóa"
+        holder.btnDelete.setOnClickListener(v -> {
+            if (actionListener != null) {
+                actionListener.onDeleteNotification(position); // Gọi callback để xử lý xóa
+            }
+        });
+
         // Đặt icon dựa trên loại thông báo
         if ("order_new".equals(notification.getType())) {
             holder.tvTitle.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_fiber_new_24, 0, 0, 0);
@@ -71,10 +93,10 @@ public class adapterNotification extends RecyclerView.Adapter<adapterNotificatio
             holder.tvTitle.setCompoundDrawablesWithIntrinsicBounds(R.drawable.baseline_notifications_active_24, 0, 0, 0);
         }
 
-        // Xử lý sự kiện click
+        // Xử lý sự kiện click vào thông báo
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onNotificationClick(notification);
+            if (clickListener != null) {
+                clickListener.onNotificationClick(notification);
             }
         });
     }
@@ -93,12 +115,15 @@ public class adapterNotification extends RecyclerView.Adapter<adapterNotificatio
     // ViewHolder class
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle, tvMessage, tvTime;
+        ImageButton btnMarkAsRead, btnDelete;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tvNotificationTitle);
             tvMessage = itemView.findViewById(R.id.tvNotificationMessage);
             tvTime = itemView.findViewById(R.id.tvNotificationTime);
+            btnMarkAsRead = itemView.findViewById(R.id.btnMarkAsRead);
+            btnDelete = itemView.findViewById(R.id.btnDeleteNotification);
         }
     }
 }

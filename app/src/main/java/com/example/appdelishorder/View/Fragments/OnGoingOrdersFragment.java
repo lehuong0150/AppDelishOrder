@@ -19,10 +19,8 @@ import android.widget.Toast;
 import com.example.appdelishorder.Adapter.adapterOrderOnGoing;
 import com.example.appdelishorder.Contract.orderContract;
 import com.example.appdelishorder.Model.Order;
-import com.example.appdelishorder.Model.OrderDetail;
 import com.example.appdelishorder.Presenter.orderPresenter;
 import com.example.appdelishorder.R;
-import com.example.appdelishorder.SignalRManager;
 import com.example.appdelishorder.Utils.OrderStatusUtil;
 import com.example.appdelishorder.Utils.SessionManager;
 import com.example.appdelishorder.View.Activities.OrderDetailActivity;
@@ -42,7 +40,7 @@ public class OnGoingOrdersFragment extends Fragment implements orderContract.Vie
     private adapterOrderOnGoing adapter;
     private orderPresenter presenter;
 
-    private SignalRManager signalRManager;
+    //private SignalRManager signalRManager;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -83,8 +81,7 @@ public class OnGoingOrdersFragment extends Fragment implements orderContract.Vie
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //khoi tao
-        signalRManager = SignalRManager.getInstance(requireContext());
+
 
         recyclerView = view.findViewById(R.id.recyclerViewOngoingOrders);
         progressBar = view.findViewById(R.id.progressBarOngoingOrders);
@@ -214,8 +211,8 @@ public class OnGoingOrdersFragment extends Fragment implements orderContract.Vie
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (signalRManager != null) {
-            //signalRManager.disconnect();
-        }
+//        if (signalRManager != null) {
+//            //signalRManager.disconnect();
+//        }
     }
 }

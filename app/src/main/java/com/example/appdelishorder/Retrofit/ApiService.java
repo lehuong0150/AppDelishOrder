@@ -9,6 +9,7 @@ import com.example.appdelishorder.Model.Order;
 import com.example.appdelishorder.Model.OrderDetail;
 import com.example.appdelishorder.Model.Product;
 import com.example.appdelishorder.Model.TokenResponse;
+import com.example.appdelishorder.Model.UpdateTokenRequest;
 
 import java.util.List;
 
@@ -101,5 +102,10 @@ public interface ApiService {
     @POST("CommentApi")
     Call<Comment> addComment(@Body Comment comment);
 
+    @POST("NotificationApi/send")
+    Call<Void> sendOrderNotification(@Query("orderId") String orderId, @Query("message") String message);
 
+    // Gui token len server
+    @POST("AccountApi/updateFirebaseToken")
+    Call<Void> updateFirebaseToken(@Body UpdateTokenRequest request);
 }

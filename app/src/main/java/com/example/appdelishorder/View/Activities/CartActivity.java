@@ -32,6 +32,7 @@ import com.example.appdelishorder.Presenter.customerPresenter;
 import com.example.appdelishorder.Presenter.orderPresenter;
 import com.example.appdelishorder.Presenter.productDetailPresenter;
 import com.example.appdelishorder.R;
+import com.example.appdelishorder.Utils.OrderUtils;
 import com.example.appdelishorder.Utils.SessionManager;
 import com.example.appdelishorder.View.Fragments.HomeFragment;
 import com.google.gson.Gson;
@@ -463,7 +464,8 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
     public void onOrderSuccess(Order order) {
         // Hiển thị thông báo thành công
         Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-
+        // Gửi thông báo lên server qua API
+        OrderUtils.sendOrderNotification(String.valueOf(order.getId()), "Đơn hàng mới đã được tạo!");
         // Xóa giỏ hàng
         cartItems.clear();
         saveCartItems();

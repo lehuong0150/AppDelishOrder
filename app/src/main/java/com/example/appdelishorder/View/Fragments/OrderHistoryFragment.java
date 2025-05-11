@@ -21,16 +21,13 @@ import com.example.appdelishorder.Contract.orderContract;
 import com.example.appdelishorder.Model.Order;
 import com.example.appdelishorder.Presenter.orderPresenter;
 import com.example.appdelishorder.R;
-import com.example.appdelishorder.SignalRManager;
 import com.example.appdelishorder.Utils.SessionManager;
 import com.example.appdelishorder.View.Activities.CartActivity;
 import com.example.appdelishorder.View.Activities.OrderDetailActivity;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -46,7 +43,7 @@ public class OrderHistoryFragment extends Fragment implements orderContract.View
     private ProgressBar progressBar;
     private adapterOrderHistory adapter;
     private orderContract.Presenter presenterOrderHistory;
-    private SignalRManager signalRManager;
+    //private SignalRManager signalRManager;
 
     // Bộ lọc thành phần
     private TextView tvStatusFilter;
@@ -123,7 +120,7 @@ public class OrderHistoryFragment extends Fragment implements orderContract.View
         }
 
         // Khởi tạo SignalRManager
-        signalRManager = SignalRManager.getInstance(requireContext());
+        //signalRManager = SignalRManager.getInstance(requireContext());
 
         // Initialize adapter
         presenterOrderHistory = new orderPresenter(this);
