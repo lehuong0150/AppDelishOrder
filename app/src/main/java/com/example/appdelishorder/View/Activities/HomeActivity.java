@@ -1,6 +1,10 @@
 package com.example.appdelishorder.View.Activities;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -13,6 +17,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.appdelishorder.R;
 import com.example.appdelishorder.View.Fragments.NotificationFragment;
@@ -27,12 +32,20 @@ public class HomeActivity extends AppCompatActivity {
     private BadgeDrawable notificationBadge;
 
     private static final String PREFS_NAME = "notifications"; // Thống nhất tên với NotificationFragment
+    private static final String NOTIFICATION_BROADCAST = "com.example.appdelishorder.NEW_NOTIFICATION";
 
     private enum CurrentPage {
         HOME, ORDER, NOTIFICATION, PROFILE
     }
 
     private CurrentPage currentPage = CurrentPage.HOME;
+
+    private final BroadcastReceiver notificationReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateNotificationBadge();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +73,9 @@ public class HomeActivity extends AppCompatActivity {
         // Kiểm tra thông báo mới
         checkForNewNotifications();
 
+        // Đăng ký nhận broadcast khi có thông báo mới
+        LocalBroadcastManager.getInstance(this).registerReceiver(notificationReceiver, new IntentFilter(NOTIFICATION_BROADCAST));
+
         // Xử lý sự kiện chọn menu
         menuBottom.setOnItemSelectedListener(item -> {
             int i = item.getItemId();
@@ -86,6 +102,13 @@ public class HomeActivity extends AppCompatActivity {
         super.onResume();
         // Kiểm tra thông báo mới khi quay lại HomeActivity
         checkForNewNotifications();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Hủy đăng ký broadcast receiver
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(notificationReceiver);
     }
 
     private void checkForNewNotifications() {

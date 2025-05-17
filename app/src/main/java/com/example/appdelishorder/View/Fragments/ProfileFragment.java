@@ -27,7 +27,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment implements customerContract.View {
 
-    private LinearLayout personalInfoOption, orderHistoryOption, settingsOption, logoutOption;
+    private LinearLayout personalInfoOption, settingsOption, logoutOption;
     private TextView txtName;
     private CircleImageView profileImage;
     private customerContract.Presenter presenter;
@@ -38,7 +38,6 @@ public class ProfileFragment extends Fragment implements customerContract.View {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
         // Initialize menu options
         personalInfoOption = view.findViewById(R.id.personalInfoOption);
-        orderHistoryOption = view.findViewById(R.id.orderHistoryOption);
         settingsOption = view.findViewById(R.id.settingsOption);
         logoutOption = view.findViewById(R.id.logoutOption);
         txtName = view.findViewById(R.id.tvUserName);
@@ -60,12 +59,6 @@ public class ProfileFragment extends Fragment implements customerContract.View {
             startActivity(intent);
         });
 
-        orderHistoryOption.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Lịch sử đơn hàng clicked", Toast.LENGTH_SHORT).show();
-            // Add logic to navigate to order history screen
-            Intent intent = new Intent(getContext(), OrderHistoryFragment.class);
-            startActivity(intent);
-        });
 
         settingsOption.setOnClickListener(v -> {
             Toast.makeText(getContext(), "Cài đặt clicked", Toast.LENGTH_SHORT).show();

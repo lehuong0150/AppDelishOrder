@@ -3,6 +3,7 @@ package com.example.appdelishorder.View.Activities;
 
 import static androidx.core.content.ContentProviderCompat.requireContext;
 
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.example.appdelishorder.Adapter.adapterCart;
 import com.example.appdelishorder.Contract.customerContract;
 import com.example.appdelishorder.Contract.orderContract;
 import com.example.appdelishorder.Contract.productDetailContract;
+import com.example.appdelishorder.Contract.vnPayContract;
 import com.example.appdelishorder.Model.CartItem;
 import com.example.appdelishorder.Model.Customer;
 import com.example.appdelishorder.Model.Order;
@@ -31,6 +33,7 @@ import com.example.appdelishorder.Model.Product;
 import com.example.appdelishorder.Presenter.customerPresenter;
 import com.example.appdelishorder.Presenter.orderPresenter;
 import com.example.appdelishorder.Presenter.productDetailPresenter;
+import com.example.appdelishorder.Presenter.vnPayPresenter;
 import com.example.appdelishorder.R;
 import com.example.appdelishorder.Utils.OrderUtils;
 import com.example.appdelishorder.Utils.SessionManager;
@@ -47,20 +50,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class CartActivity extends AppCompatActivity implements productDetailContract.View, orderContract.View, customerContract.View {
+public class CartActivity extends AppCompatActivity implements productDetailContract.View, orderContract.View, customerContract.View, vnPayContract.View {
 
 
     private TextView tvTitle, tvProductCount, tvSubtotal, tvDeliveryFee, tvTotal, btnBackToMenu;
     private EditText etAddress, etPhone;
     private RecyclerView rvProducts;
     private ImageButton btnAddItem;
-    private Button btnMomo, btnCash, btnOrder ;
+    private Button btnVNPay, btnCash, btnOrder ;
     private adapterCart cartAdapter;
     private List<CartItem> cartItems;
     private int productId;
     private String selectedPaymentMethod = "Tiền mặt"; // Default payment method
     private productDetailContract.Presenter productPresenter;
     private orderContract.Presenter presenterOrder;
+    private vnPayContract.Presenter vnpayPresenter;
     private static final String PREF_NAME = "CartPreferences";
     private static final String CART_ITEMS_KEY = "cartItems";
     private static final int ADD_PRODUCT_REQUEST = 1001;
@@ -70,7 +74,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
     String email;
     boolean productExists = false;
     int quantity = 0;
-
+    private int lastOrderIdVNPay = -1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +84,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
         productPresenter = new productDetailPresenter(this);
         presenterOrder = new orderPresenter(this);
         customerPresenter = new customerPresenter(this);
+        vnpayPresenter = new vnPayPresenter(this);
         // Initialize views
         initializeViews();
 
@@ -126,6 +131,8 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
 
         // Set default payment method
         selectPaymentMethod("Tiền mặt");
+        Log.d("VNPay", "Intent data: " + getIntent().getDataString());
+        handleDeepLink(getIntent());
     }
 
     private void initializeViews() {
@@ -137,7 +144,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
         etAddress = findViewById(R.id.etAddress);
         etPhone = findViewById(R.id.etPhone);
         rvProducts = findViewById(R.id.rvProducts);
-        btnMomo = findViewById(R.id.btnMomo);
+        btnVNPay = findViewById(R.id.btnVNPay);
         btnCash = findViewById(R.id.btnCash);
         btnOrder = findViewById(R.id.btnOrder);
         btnAddItem = findViewById(R.id.ivbAddItem);
@@ -229,7 +236,10 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
         });
 
         // Handle payment method selection
-        btnMomo.setOnClickListener(v -> selectPaymentMethod("MoMo"));
+        btnVNPay.setOnClickListener(v -> {
+            selectPaymentMethod("VNPay");
+            placeOrder();
+        });
         btnCash.setOnClickListener(v -> selectPaymentMethod("Tiền mặt"));
 
         // Handle order placement
@@ -283,11 +293,11 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
         selectedPaymentMethod = method;
 
         // Highlight selected payment method button
-        if (method.equals("MoMo")) {
-            btnMomo.setBackgroundResource(R.drawable.cat_0_background);
+        if (method.equals("VNPay")) {
+            btnVNPay.setBackgroundResource(R.drawable.cat_0_background);
             btnCash.setBackgroundResource(R.drawable.category_bg);
         } else {
-            btnMomo.setBackgroundResource(R.drawable.category_bg);
+            btnVNPay.setBackgroundResource(R.drawable.category_bg);
             btnCash.setBackgroundResource(R.drawable.cat_0_background);
         }
 
@@ -331,8 +341,8 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
                 .format(new Date()));
         order.setStatus(0); // Giả sử 1 là trạng thái "Đã đặt hàng" hoặc "Chờ xác nhận"
         order.setAccountEmail(email); // Lấy email của user hiện tại đã đăng nhập
-        order.setPaymentMethod(selectedPaymentMethod.equals("Tiền mặt") ? "Tiền mặt" : "MoMo");
-        order.setPaymentStatus(selectedPaymentMethod.equals("Tiền mặt") ? "Chưa thanh toán" : "Đã thanh toán");
+        order.setPaymentMethod(selectedPaymentMethod.equals("Tiền mặt") ? "Tiền mặt" : "VNPay");
+        order.setPaymentStatus("Chưa thanh toán");
         order.setTotalPrice(totalPrice);
         order.setRate(false);
 
@@ -361,6 +371,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
 
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -371,6 +382,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
                 productPresenter.loadProductDetails(selectedProductId);
             }
         }
+
     }
 
     // productDetailContract.View implementation
@@ -462,16 +474,57 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
 
     @Override
     public void onOrderSuccess(Order order) {
-        // Hiển thị thông báo thành công
-        Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
-        // Gửi thông báo lên server qua API
-        OrderUtils.sendOrderNotification(String.valueOf(order.getId()), "Đơn hàng mới đã được tạo!");
-        // Xóa giỏ hàng
-        cartItems.clear();
-        saveCartItems();
-        Intent intent = new Intent(CartActivity.this,HomeActivity.class );
-        startActivity(intent);
+        if ("VNPay".equals(order.getPaymentMethod())) {
+            // Gọi VNPay sau khi đã có orderId
+            lastOrderIdVNPay = order.getId();
+            vnpayPresenter.createVNPayPayment(String.valueOf((int)order.getTotalPrice()), String.valueOf(order.getId()));
+        } else {
+            // Hiển thị thông báo thành công cho thanh toán tiền mặt
+            Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_SHORT).show();
+            OrderUtils.sendOrderNotification(String.valueOf(order.getId()), "Đơn hàng mới đã được tạo!");
+            cartItems.clear();
+            saveCartItems();
+            Intent intent = new Intent(CartActivity.this, HomeActivity.class);
+            startActivity(intent);
+        }
     }
 
 
+    @Override
+    public void onVNPayUrlReceived(String url) {
+    // Mở trình duyệt hoặc WebView để thanh toán
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(android.net.Uri.parse(url));
+        startActivity(intent);
+    }
+    private void handleDeepLink(Intent intent) {
+        if (intent.getData() != null
+                && "appdelishorder".equals(intent.getData().getScheme())
+                && "vnpay_return".equals(intent.getData().getHost())) {
+            String status = intent.getData().getQueryParameter("vnp_TransactionStatus");
+            if ("00".equals(status)) {
+                presenterOrder.updateOrderStatus(lastOrderIdVNPay);
+                Toast.makeText(this, "Thanh toán VNPay thành công!", Toast.LENGTH_SHORT).show();
+                OrderUtils.sendOrderNotification(String.valueOf(lastOrderIdVNPay), "Đơn hàng mới đã được tạo!");
+                cartItems.clear();
+                saveCartItems();
+                Intent homeIntent = new Intent(CartActivity.this, HomeActivity.class);
+                startActivity(homeIntent);
+            } else {
+                Toast.makeText(this, "Thanh toán VNPay thất bại!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        Log.d("VNP", "onNewIntent: " + intent.getData());
+        handleDeepLink(intent);
+    }
+    @Override
+    public void onVNPayError(String message) {
+        Toast.makeText(this, "Lỗi VNPay: " + message, Toast.LENGTH_SHORT).show();
+
+    }
 }

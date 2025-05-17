@@ -97,5 +97,26 @@ public class orderPresenter implements orderContract.Presenter {
         });
     }
 
+    @Override
+    public void updateOrderStatus(int orderId) {
+        Call<Order> call = apiService.completeOrderPayment(String.valueOf(orderId));
+        call.enqueue(new Callback<Order>() {
+            @Override
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.isSuccessful()) {
+                    // Xử lý khi cập nhật thành công
+                    Log.d("Payment", "Thanh toán thành công: " + response.body());
+                } else {
+                    Log.e("Payment", "Lỗi phản hồi: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Order> call, Throwable t) {
+                Log.e("Payment", "Lỗi mạng: " + t.getMessage());
+            }
+        });
+    }
+
 
 }

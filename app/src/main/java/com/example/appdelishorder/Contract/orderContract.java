@@ -18,5 +18,6 @@ public interface orderContract {
         void loadOrders(String email, String status);
         void loadOrderDetails(int orderId);
         void placeOrder(Order order);
+        void updateOrderStatus(int orderId);
     }
 }

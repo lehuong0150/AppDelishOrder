@@ -10,6 +10,7 @@ import com.example.appdelishorder.Model.OrderDetail;
 import com.example.appdelishorder.Model.Product;
 import com.example.appdelishorder.Model.TokenResponse;
 import com.example.appdelishorder.Model.UpdateTokenRequest;
+import com.example.appdelishorder.Model.VNPayResponse;
 
 import java.util.List;
 
@@ -108,4 +109,13 @@ public interface ApiService {
     // Gui token len server
     @POST("AccountApi/updateFirebaseToken")
     Call<Void> updateFirebaseToken(@Body UpdateTokenRequest request);
+
+    // thanh toan
+    @GET("VNPayApi/create")
+    Call<VNPayResponse> createPayment(
+            @Query("amount") String amount,
+            @Query("orderId") String orderId
+    );
+    @POST("OrderApi/{orderId}/payment-complete")
+    Call<Order> completeOrderPayment(@Path("orderId") String orderId);
 }
