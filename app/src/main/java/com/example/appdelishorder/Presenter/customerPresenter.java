@@ -117,6 +117,35 @@ public class customerPresenter implements customerContract.Presenter {
         });
     }
 
+    @Override
+    public void createCustomer(Customer customer) {
+        view.showLoading();
+        apiService.createCustomer(customer).enqueue(new Callback<Customer>() {
+            @Override
+            public void onResponse(Call<Customer> call, Response<Customer> response) {
+                view.hideLoading();
+                if (response.isSuccessful() && response.body() != null) {
+                    view.showUpdateSuccess("Tạo khách hàng thành công!");
+                } else {
+                    String errorMsg = "Tạo khách hàng thất bại.";
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg = response.errorBody().string();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    view.showUpdateError(errorMsg);
+                }
+            }
+            @Override
+            public void onFailure(Call<Customer> call, Throwable t) {
+                view.hideLoading();
+                view.showUpdateError("Không thể kết nối tới server.");
+            }
+        });
+    }
+
     // Kiểm tra chuỗi có phải JSON hợp lệ không
     private boolean isValidJSON(String json) {
         try {

@@ -85,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity implements accountContra
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
         // Chuyển sang LoginActivity và truyền email, password
-        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+        Intent intent = new Intent(RegisterActivity.this, CustomerInfoActivity.class);
         intent.putExtra("email", emailInput.getText().toString());
         intent.putExtra("password", passwordInput.getText().toString());
         startActivity(intent);
@@ -95,5 +95,15 @@ public class RegisterActivity extends AppCompatActivity implements accountContra
     @Override
     public void showRegisterError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showChangePasswordSuccess(String message) {
+
+    }
+
+    @Override
+    public void showChangePasswordError(String error) {
+
     }
 }

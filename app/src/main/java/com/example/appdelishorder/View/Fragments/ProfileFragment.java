@@ -1,7 +1,11 @@
 package com.example.appdelishorder.View.Fragments;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +15,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
+import android.Manifest;
 import com.bumptech.glide.Glide;
 import com.example.appdelishorder.Contract.customerContract;
 import com.example.appdelishorder.Model.Customer;
@@ -23,23 +29,32 @@ import com.example.appdelishorder.View.Activities.LoginActivity;
 import com.example.appdelishorder.View.Activities.ProfileActivity;
 import com.example.appdelishorder.View.Activities.SettingsActivity;
 
+import java.io.File;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment implements customerContract.View {
 
-    private LinearLayout personalInfoOption, settingsOption, logoutOption;
+    private LinearLayout personalInfoOption, settingsOption, logoutOption, shopInfoOption;
     private TextView txtName;
     private CircleImageView profileImage;
     private customerContract.Presenter presenter;
+    private String avatarPath;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
         // Initialize menu options
         personalInfoOption = view.findViewById(R.id.personalInfoOption);
         settingsOption = view.findViewById(R.id.settingsOption);
         logoutOption = view.findViewById(R.id.logoutOption);
+        shopInfoOption = view.findViewById(R.id.ShopInfoOption);
         txtName = view.findViewById(R.id.tvUserName);
         profileImage = view.findViewById(R.id.imgProfile);
 
@@ -74,7 +89,24 @@ public class ProfileFragment extends Fragment implements customerContract.View {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         });
+        shopInfoOption.setOnClickListener(v -> showShopInfoDialog());
         return view;
+    }
+    private void showShopInfoDialog() {
+        Dialog dialog = new Dialog(getContext());
+        dialog.setContentView(R.layout.dialog_shop_info);
+
+        TextView tvShopName = dialog.findViewById(R.id.tvShopName);
+        TextView tvShopPhone = dialog.findViewById(R.id.tvShopPhone);
+        TextView tvShopAddress = dialog.findViewById(R.id.tvShopAddress);
+
+        tvShopPhone.setOnClickListener(v -> {
+            String phone = tvShopPhone.getText().toString();
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phone));
+            startActivity(intent);
+        });
+
+        dialog.show();
     }
 
     @Override
@@ -90,12 +122,33 @@ public class ProfileFragment extends Fragment implements customerContract.View {
     @Override
     public void displayCustomerInfo(Customer customer) {
         txtName.setText(customer.getName());
-        // Assuming you have a method to load image from URL
-        Glide.with(getContext())
-                .load(customer.getAvatar())
-                .placeholder(R.drawable.baseline_perm_contact_calendar_24)
-                .into(profileImage);
-    }
+        avatarPath = customer.getAvatar();
+        Log.d("ProfileFragment", "Avatar URL: " + avatarPath);
+
+        // Load avatar image using Glide
+        if (avatarPath != null && !avatarPath.isEmpty()) {
+            if (avatarPath.startsWith("http")) {
+                Glide.with(getContext())
+                        .load(avatarPath)
+                        .placeholder(R.drawable.avt)
+                        .error(R.drawable.avt)
+                        .into(profileImage);
+            } else if (avatarPath.startsWith("content://")) {
+                Glide.with(requireContext())
+                        .load(Uri.parse(avatarPath))
+                        .placeholder(R.drawable.avt)
+                        .error(R.drawable.avt)
+                        .into(profileImage);
+            } else {
+                Glide.with(requireContext())
+                        .load(Uri.parse(avatarPath))
+                        .placeholder(R.drawable.avt)
+                        .error(R.drawable.avt)
+                        .into(profileImage);
+            }
+
+    }}
+
 
     @Override
     public void showUpdateSuccess(String message) {

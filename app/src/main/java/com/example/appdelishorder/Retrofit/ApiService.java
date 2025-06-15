@@ -13,6 +13,7 @@ import com.example.appdelishorder.Model.UpdateTokenRequest;
 import com.example.appdelishorder.Model.VNPayResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -118,4 +119,12 @@ public interface ApiService {
     );
     @POST("OrderApi/{orderId}/payment-complete")
     Call<Order> completeOrderPayment(@Path("orderId") String orderId);
+
+    //doi mat khau
+    @POST("AccountApi/changePassword")
+    Call<Void> changePassword(@Body Map<String, String> data);
+
+    // Thêm API tạo khách hàng
+    @POST("CustomerApi/create")
+    Call<Customer> createCustomer(@Body Customer customer);
 }

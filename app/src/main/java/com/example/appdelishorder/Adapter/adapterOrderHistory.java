@@ -73,7 +73,7 @@ public class adapterOrderHistory extends RecyclerView.Adapter<adapterOrderHistor
             holder.btnRate.setVisibility(View.VISIBLE);
             holder.btnRate.setEnabled(false); // Disable the button
         } else {
-            holder.btnRate.setBackgroundTintList(context.getResources().getColorStateList(R.color.red));
+            holder.btnRate.setBackgroundTintList(context.getResources().getColorStateList(R.color.black));
             holder.btnRate.setText("Đánh giá");
             holder.btnRate.setVisibility(View.VISIBLE);
             holder.btnRate.setEnabled(false); // Button is visible but not clickable

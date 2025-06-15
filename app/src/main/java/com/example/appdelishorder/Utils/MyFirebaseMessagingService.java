@@ -25,20 +25,19 @@ import com.example.appdelishorder.R;
 import com.example.appdelishorder.Retrofit.APIClient;
 import com.example.appdelishorder.Retrofit.ApiService;
 import com.example.appdelishorder.View.Activities.MainActivity;
-import com.example.appdelishorder.View.Fragments.NotificationFragment;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
-    private static final Logger log = LoggerFactory.getLogger(MyFirebaseMessagingService.class);
+    private static final String TAG = "FCMService";
+    private static final String PREFS_NAME = "notifications";
+    private static final String SOUND_PREF_KEY = "soundEnabled";
+    private static final String CHANNEL_ID = "order_notifications";
 
     @Override
     public void onNewToken(String token) {
@@ -49,13 +48,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         String email = sessionManager.getEmail();
 
         if (email != null) {
-            Log.d("FCM", "Email: " + email);
-            Log.d("FCM", "New Firebase Token: " + token);
+            Log.d(TAG, "Email: " + email);
+            Log.d(TAG, "New Firebase Token: " + token);
 
             // Gửi token mới lên server
             sendTokenToServer(email, token);
         } else {
-            Log.w("FCM", "Không tìm thấy email người dùng. Token không được gửi.");
+            Log.w(TAG, "Không tìm thấy email người dùng. Token không được gửi.");
         }
     }
 
@@ -68,37 +67,36 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Log.d("FCM", "Token đã được cập nhật thành công trên server.");
+                    Log.d(TAG, "Token đã được cập nhật thành công trên server.");
                 } else {
-                    Log.e("FCM", "Lỗi khi cập nhật token trên server: " + response.message());
+                    Log.e(TAG, "Lỗi khi cập nhật token trên server: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("FCM", "Lỗi khi gửi token lên server: " + t.getMessage());
+                Log.e(TAG, "Lỗi khi gửi token lên server: " + t.getMessage());
             }
         });
     }
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
-        Log.d("FCMe", "Message received from: " + remoteMessage.getFrom());
+        Log.d(TAG, "Message received from: " + remoteMessage.getFrom());
 
-        if (remoteMessage.getData().size() > 0) {
-            Log.d("FCMe", "Message data payload: " + remoteMessage.getData());
-        }
+        String title = "Thông báo";
+        String body = "Bạn có thông báo mới";
 
         if (remoteMessage.getNotification() != null) {
-            Log.d("FCM", "Message notification title: " + remoteMessage.getNotification().getTitle());
-            Log.d("FCM", "Message notification body: " + remoteMessage.getNotification().getBody());
+            title = remoteMessage.getNotification().getTitle() != null ? remoteMessage.getNotification().getTitle() : title;
+            body = remoteMessage.getNotification().getBody() != null ? remoteMessage.getNotification().getBody() : body;
+            Log.d(TAG, "Message notification title: " + title);
+            Log.d(TAG, "Message notification body: " + body);
         }
-        // Lấy thông tin từ Notification payload
-        String title = remoteMessage.getNotification() != null ? remoteMessage.getNotification().getTitle() : "Thông báo";
-        String body = remoteMessage.getNotification() != null ? remoteMessage.getNotification().getBody() : "Bạn có thông báo mới";
 
         // Tạo đối tượng Notification
-        Notification notification = new Notification(title, body , System.currentTimeMillis(), false, "order_status");
+        Notification notification = new Notification(title, body, System.currentTimeMillis(), false, "order_status");
 
         // Lưu thông báo
         saveNotification(notification);
@@ -109,74 +107,68 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         sendBroadcast(intent);
 
         // Hiển thị thông báo
-        showNotification(title, body );
+        showNotification(title, body);
     }
 
     private void saveNotification(Notification notification) {
-        SharedPreferences sharedPreferences = getSharedPreferences("notifications", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         Gson gson = new Gson();
         String json = gson.toJson(notification);
 
-        editor.putString("notification_" + System.currentTimeMillis(), json);
+        editor.putString("notification_" + notification.getTimestamp(), json);
         editor.apply();
 
-        Log.d("FCM", "Notification saved: " + notification.getTitle());
+        Log.d(TAG, "Notification saved: " + notification.getTitle());
     }
 
     private void showNotification(String title, String body) {
-        String channelId = "order_notifications";
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 
-        // Lấy trạng thái âm thanh từ SharedPreferences
-        SharedPreferences sharedPreferences = getSharedPreferences("NotificationPrefs", MODE_PRIVATE);
-        boolean isSoundEnabled = sharedPreferences.getBoolean("soundEnabled", true);
-        Log.d("FCM", "Sound enabled: " + isSoundEnabled);
-
-        // Kiểm tra âm lượng thông báo của thiết bị
-        AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        int notificationVolume = audioManager.getStreamVolume(AudioManager.STREAM_NOTIFICATION);
-        if (notificationVolume == 0) {
-            Log.w("FCM", "Notification volume is set to 0 on device.");
-        }
+        // Lấy trạng thái âm thanh từ SharedPreferences (dùng chung PREFS_NAME)
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        boolean isSoundEnabled = sharedPreferences.getBoolean(SOUND_PREF_KEY, true);
+        Log.d(TAG, "Sound enabled: " + isSoundEnabled);
 
         Uri soundUri = null;
         if (isSoundEnabled) {
             soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         }
 
+        // Tạo NotificationChannel nếu cần (Android O+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationManager systemNotificationManager = getSystemService(NotificationManager.class);
 
-            // Tạo kênh thông báo mới với ID độc nhất nếu cần thay đổi cài đặt
-            // String newChannelId = "order_notifications_" + System.currentTimeMillis();
-
-            // Hoặc xóa kênh cũ nếu đã tồn tại trước khi tạo lại
-            systemNotificationManager.deleteNotificationChannel(channelId);
-
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    "Order Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel.setDescription("Channel for order notifications");
-
-            if (isSoundEnabled) {
-                channel.setSound(soundUri, new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                        .build());
+            NotificationChannel channel = systemNotificationManager.getNotificationChannel(CHANNEL_ID);
+            if (channel == null) {
+                channel = new NotificationChannel(
+                        CHANNEL_ID,
+                        "Order Notifications",
+                        NotificationManager.IMPORTANCE_HIGH
+                );
+                channel.setDescription("Channel for order notifications");
+                if (isSoundEnabled && soundUri != null) {
+                    channel.setSound(soundUri, new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build());
+                } else {
+                    channel.setSound(null, null);
+                }
+                systemNotificationManager.createNotificationChannel(channel);
             } else {
-                channel.setSound(null, null);
-            }
-
-            systemNotificationManager.createNotificationChannel(channel);
-
-            // Kiểm tra xem kênh có bị vô hiệu hóa không
-            NotificationChannel createdChannel = systemNotificationManager.getNotificationChannel(channelId);
-            if (createdChannel != null && createdChannel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
-                Log.w("FCM", "Notification channel is disabled by user.");
+                // Nếu trạng thái sound thay đổi, cập nhật lại channel
+                if (isSoundEnabled && soundUri != null && channel.getSound() == null) {
+                    channel.setSound(soundUri, new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .build());
+                    systemNotificationManager.createNotificationChannel(channel);
+                } else if (!isSoundEnabled && channel.getSound() != null) {
+                    channel.setSound(null, null);
+                    systemNotificationManager.createNotificationChannel(channel);
+                }
             }
         }
 
@@ -188,7 +180,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.baseline_notifications_active_24)
                 .setContentTitle(title)
                 .setContentText(body)
@@ -197,18 +189,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setAutoCancel(true);
 
         // Chỉ thiết lập âm thanh cho builder ở phiên bản Android < 8.0
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            if (isSoundEnabled && soundUri != null) {
-                builder.setSound(soundUri);
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && isSoundEnabled && soundUri != null) {
+            builder.setSound(soundUri);
         }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
-            notificationManager.notify(1, builder.build());
+            notificationManager.notify((int) System.currentTimeMillis(), builder.build());
         } else {
-            Log.w("FCM", "Notification permission not granted.");
+            Log.w(TAG, "Notification permission not granted.");
         }
     }
-
 }
-

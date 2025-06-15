@@ -112,31 +112,30 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void checkForNewNotifications() {
-        // Lấy số lượng thông báo chưa đọc từ SharedPreferences - dùng cùng tên file với NotificationFragment
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int unreadCount = sharedPreferences.getInt("unread_notification_count", 0);
 
         Log.d("HomeActivity", "Kiểm tra thông báo: " + unreadCount + " thông báo chưa đọc");
 
         if (unreadCount > 0 && currentPage != CurrentPage.NOTIFICATION) {
-            showNotificationBadge(unreadCount); // Hiển thị badge với số lượng thông báo chưa đọc
+            showNotificationBadge(); // Chỉ hiện dấu chấm, không hiện số
         } else {
-            clearNotificationBadge(); // Ẩn badge nếu không có thông báo mới hoặc đang ở trang thông báo
+            clearNotificationBadge();
         }
     }
 
-    private void showNotificationBadge(int count) {
+    private void showNotificationBadge() {
         if (notificationBadge != null) {
             notificationBadge.setVisible(true);
-            notificationBadge.setNumber(count); // Hiển thị số lượng thông báo mới
-            Log.d("HomeActivity", "Hiển thị badge với số lượng: " + count);
+            notificationBadge.clearNumber(); // Đảm bảo không hiện số
+            Log.d("HomeActivity", "Hiển thị dấu chấm badge");
         }
     }
 
     private void clearNotificationBadge() {
         if (notificationBadge != null) {
-            notificationBadge.setVisible(false); // Ẩn badge
-            notificationBadge.clearNumber(); // Xóa số lượng thông báo
+            notificationBadge.setVisible(false);
+            notificationBadge.clearNumber();
             Log.d("HomeActivity", "Đã xóa badge thông báo");
         }
     }

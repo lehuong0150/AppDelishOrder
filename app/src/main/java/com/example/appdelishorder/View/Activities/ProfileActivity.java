@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -207,19 +208,24 @@ public class ProfileActivity extends AppCompatActivity implements customerContra
             // Load avatar image using Glide
             if (avatarPath != null && !avatarPath.isEmpty()) {
                 if (avatarPath.startsWith("http")) {
-                    // Trường hợp link là URL trực tuyến
                     Glide.with(this)
                             .load(avatarPath)
-                            .placeholder(R.drawable.avt) // Thêm placeholder nếu có
-                            .error(R.drawable.avt) // Thêm ảnh lỗi nếu có
+                            .placeholder(R.drawable.avt)
+                            .error(R.drawable.avt)
+                            .into(imgAvatar);
+                } else if (avatarPath.startsWith("content://")) {
+                    Glide.with(this)
+                            .load(Uri.parse(avatarPath))
+                            .placeholder(R.drawable.avt)
+                            .error(R.drawable.avt)
                             .into(imgAvatar);
                 } else {
-                    // Trường hợp link là file cục bộ
                     File file = new File(avatarPath);
+                    Log.d("ProfileActivity", "Avatar path: " + avatarPath + ", exists: " + file.exists());
                     Glide.with(this)
                             .load(file)
-                            .placeholder(R.drawable.avt) // Thêm placeholder nếu có
-                            .error(R.drawable.avt) // Thêm ảnh lỗi nếu có
+                            .placeholder(R.drawable.avt)
+                            .error(R.drawable.avt)
                             .into(imgAvatar);
                 }
             }
@@ -266,5 +272,6 @@ public class ProfileActivity extends AppCompatActivity implements customerContra
     public void showError(String message) {
         // Handle error
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Log.d("ErrorCus", "showError: " + message);
     }
 }

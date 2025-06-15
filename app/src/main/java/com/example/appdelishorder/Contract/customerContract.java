@@ -15,5 +15,6 @@ public interface customerContract {
     interface Presenter {
         void loadCustomerInfo(String email);
         void updateCustomerInfo(int idCustomer, Customer customer);
+        void createCustomer(Customer customer);
     }
 }

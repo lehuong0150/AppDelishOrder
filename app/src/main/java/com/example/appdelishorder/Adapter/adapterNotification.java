@@ -103,7 +103,7 @@ public class adapterNotification extends RecyclerView.Adapter<adapterNotificatio
 
     @Override
     public int getItemCount() {
-        return notifications.size();
+        return notifications != null ? notifications.size() : 0;
     }
 
     // Cập nhật danh sách thông báo

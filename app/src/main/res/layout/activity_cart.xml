@@ -249,6 +249,26 @@
                     android:textColor="@android:color/white" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/tvSuggestionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="16dp"
+                android:text="Có thể bạn cũng thích"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/layoutPaymentOptions" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSuggestedItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:paddingHorizontal="8dp"
+                app:layout_constraintTop_toBottomOf="@id/tvSuggestionTitle" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

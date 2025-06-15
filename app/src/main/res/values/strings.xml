@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AppDelishOrder</string>
+    <string name="app_name">DelishOrder</string>
     <string-array name="gender_array">
         <item>Nam</item>
         <item>Nữ</item>

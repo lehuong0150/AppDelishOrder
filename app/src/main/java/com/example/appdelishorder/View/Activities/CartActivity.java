@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appdelishorder.Adapter.adapterCart;
+import com.example.appdelishorder.Adapter.SuggestedItemsAdapter;
 import com.example.appdelishorder.Contract.customerContract;
 import com.example.appdelishorder.Contract.orderContract;
 import com.example.appdelishorder.Contract.productDetailContract;
@@ -39,16 +40,27 @@ import com.example.appdelishorder.Utils.OrderUtils;
 import com.example.appdelishorder.Utils.SessionManager;
 import com.example.appdelishorder.View.Fragments.HomeFragment;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class CartActivity extends AppCompatActivity implements productDetailContract.View, orderContract.View, customerContract.View, vnPayContract.View {
 
@@ -75,6 +87,12 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
     boolean productExists = false;
     int quantity = 0;
     private int lastOrderIdVNPay = -1;
+
+    private RecyclerView rvSuggestedItems;
+    private List<Product> suggestedProducts = new ArrayList<>();
+    private SuggestedItemsAdapter suggestedItemsAdapter;
+    private Gson gson = new Gson();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,6 +140,7 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
 
         // Initialize RecyclerView
         setupRecyclerView();
+        setupSuggestedItems();  // Add this line
 
         // Update cart summary
         updateCartSummary();
@@ -216,6 +235,80 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
             }
         });
         rvProducts.setAdapter(cartAdapter);
+    }
+
+    private void setupSuggestedItems() {
+        rvSuggestedItems = findViewById(R.id.rvSuggestedItems);
+        rvSuggestedItems.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        
+        suggestedItemsAdapter = new SuggestedItemsAdapter(this, suggestedProducts, product -> {
+            addOrUpdateProductInCart(product, 1);
+            Toast.makeText(this, "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
+        });
+        
+        rvSuggestedItems.setAdapter(suggestedItemsAdapter);
+        updateSuggestedProducts();
+    }
+
+    private void updateSuggestedProducts() {
+        if (cartItems.isEmpty()) return;
+        
+        try {
+            // Read association rules from JSON file
+            InputStream is = getAssets().open("output.json");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+            JsonArray rules = jsonObject.getAsJsonArray("association_rules");
+
+            // Get current cart item IDs
+            Set<Integer> cartItemIds = new HashSet<>();
+            for (CartItem item : cartItems) {
+                cartItemIds.add(item.getProduct().getId());
+            }
+
+            // Find suggestions based on rules
+            Map<Integer, Double> suggestions = new HashMap<>();
+            for (JsonElement element : rules) {
+                JsonObject rule = element.getAsJsonObject();
+                JsonArray antecedents = rule.getAsJsonArray("antecedents");
+                JsonArray consequents = rule.getAsJsonArray("consequents");
+                double confidence = rule.get("confidence").getAsDouble();
+
+                // Check if rule antecedents match cart items
+                boolean matches = true;
+                for (JsonElement ant : antecedents) {
+                    if (!cartItemIds.contains(ant.getAsInt())) {
+                        matches = false;
+                        break;
+                    }
+                }
+
+                if (matches) {
+                    // Add consequents to suggestions
+                    for (JsonElement cons : consequents) {
+                        int productId = cons.getAsInt();
+                        if (!cartItemIds.contains(productId)) {
+                            suggestions.put(productId, confidence);
+                        }
+                    }
+                }
+            }
+
+            // Sort suggestions by confidence
+            List<Map.Entry<Integer, Double>> sortedSuggestions = new ArrayList<>(suggestions.entrySet());
+            sortedSuggestions.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+
+            // Load top 5 suggested products
+            suggestedProducts.clear();
+            int count = 0;
+            for (Map.Entry<Integer, Double> entry : sortedSuggestions) {
+                if (count >= 5) break;
+                productPresenter.loadProductDetails(entry.getKey());
+                count++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupButtonListeners() {
@@ -419,6 +512,13 @@ public class CartActivity extends AppCompatActivity implements productDetailCont
 
     @Override
     public void displayProductDetails(Product product) {
+        // For suggestions
+        if (!cartItems.stream().anyMatch(item -> item.getProduct().getId() == product.getId())) {
+            suggestedProducts.add(product);
+            suggestedItemsAdapter.notifyDataSetChanged();
+            return;
+        }
+
         // Check if product already exists in cart
         boolean productExists = false;
         for (CartItem item : cartItems) {

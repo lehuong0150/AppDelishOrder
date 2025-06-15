@@ -13,6 +13,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -109,6 +111,38 @@ public class accountPresenter implements accountContract.Presenter {
                Log.e("Register Error", "Request failed: " + t.getMessage());
            }
        });
+    }
+    // doi mat khau
+    @Override
+    public void doChangePassword(String email, String oldPassword, String newPassword) {
+        view.showLoading();
+        Map<String, String> data = new HashMap<>();
+        data.put("email", email);
+        data.put("oldPassword", oldPassword);
+        data.put("newPassword", newPassword);
+
+        apiService.changePassword(data).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                view.hideLoading();
+                if (response.isSuccessful()) {
+                    view.showChangePasswordSuccess("Đổi mật khẩu thành công.");
+                } else {
+                    try {
+                        String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Đổi mật khẩu thất bại.";
+                        view.showChangePasswordError(errorMsg);
+                    } catch (IOException e) {
+                        view.showChangePasswordError("Lỗi xử lý phản hồi.");
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                view.hideLoading();
+                view.showChangePasswordError("Không thể kết nối tới server.");
+            }
+        });
     }
 
 

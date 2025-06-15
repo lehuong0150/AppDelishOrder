@@ -100,6 +100,19 @@ public class LoginActivity extends AppCompatActivity implements  accountContract
         // Save the email in SessionManager
         SessionManager sessionManager = new SessionManager(this);
         String email = emailInput.getText().toString().trim();
+
+        // --- ĐOẠN KIỂM TRA VÀ XÓA THÔNG BÁO NẾU ĐĂNG NHẬP TÀI KHOẢN KHÁC ---
+        // Lưu email hiện tại vào SharedPreferences
+        android.content.SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String lastUser = prefs.getString("current_user", "");
+        if (!lastUser.equals(email)) {
+            // Nếu là tài khoản khác thì xóa thông báo
+            android.content.SharedPreferences notificationPrefs = getSharedPreferences("notifications", MODE_PRIVATE);
+            notificationPrefs.edit().clear().apply();
+        }
+        prefs.edit().putString("current_user", email).apply();
+        // --- HẾT ĐOẠN THÊM ---
+
         sessionManager.saveEmail(email);
         sessionManager.saveToken(token);
 
@@ -162,6 +175,17 @@ public class LoginActivity extends AppCompatActivity implements  accountContract
     public void showRegisterError(String error) {
 
     }
+
+    @Override
+    public void showChangePasswordSuccess(String message) {
+
+    }
+
+    @Override
+    public void showChangePasswordError(String error) {
+
+    }
+
     private void sendTokenToServer(String email, String firebaseToken) {
         ApiService apiService = APIClient.getClient().create(ApiService.class);
         UpdateTokenRequest request = new UpdateTokenRequest(email, firebaseToken);

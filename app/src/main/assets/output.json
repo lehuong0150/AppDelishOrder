@@ -1,0 +1,624 @@
+{
+  "frequent_itemsets": [
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        1
+      ]
+    },
+    {
+      "support": 0.04819277108433735,
+      "itemsets": [
+        2
+      ]
+    },
+    {
+      "support": 0.12048192771084337,
+      "itemsets": [
+        3
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        4
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        5
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        6
+      ]
+    },
+    {
+      "support": 0.10843373493975904,
+      "itemsets": [
+        7
+      ]
+    },
+    {
+      "support": 0.060240963855421686,
+      "itemsets": [
+        8
+      ]
+    },
+    {
+      "support": 0.08433734939759036,
+      "itemsets": [
+        9
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        10
+      ]
+    },
+    {
+      "support": 0.07228915662650602,
+      "itemsets": [
+        11
+      ]
+    },
+    {
+      "support": 0.08433734939759036,
+      "itemsets": [
+        12
+      ]
+    },
+    {
+      "support": 0.13253012048192772,
+      "itemsets": [
+        13
+      ]
+    },
+    {
+      "support": 0.08433734939759036,
+      "itemsets": [
+        14
+      ]
+    },
+    {
+      "support": 0.14457831325301204,
+      "itemsets": [
+        15
+      ]
+    },
+    {
+      "support": 0.07228915662650602,
+      "itemsets": [
+        16
+      ]
+    },
+    {
+      "support": 0.24096385542168675,
+      "itemsets": [
+        17
+      ]
+    },
+    {
+      "support": 0.0963855421686747,
+      "itemsets": [
+        18
+      ]
+    },
+    {
+      "support": 0.060240963855421686,
+      "itemsets": [
+        19
+      ]
+    },
+    {
+      "support": 0.0963855421686747,
+      "itemsets": [
+        20
+      ]
+    },
+    {
+      "support": 0.10843373493975904,
+      "itemsets": [
+        21
+      ]
+    },
+    {
+      "support": 0.060240963855421686,
+      "itemsets": [
+        22
+      ]
+    },
+    {
+      "support": 0.08433734939759036,
+      "itemsets": [
+        23
+      ]
+    },
+    {
+      "support": 0.060240963855421686,
+      "itemsets": [
+        24
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        25
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        26
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        27
+      ]
+    },
+    {
+      "support": 0.07228915662650602,
+      "itemsets": [
+        28
+      ]
+    },
+    {
+      "support": 0.08433734939759036,
+      "itemsets": [
+        29
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        30
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        31
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        1,
+        13
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        11,
+        3
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        3,
+        23
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        12,
+        7
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        8,
+        17
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        9,
+        17
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        18,
+        13
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        27,
+        13
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        28,
+        13
+      ]
+    },
+    {
+      "support": 0.03614457831325301,
+      "itemsets": [
+        17,
+        15
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        18,
+        15
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        20,
+        15
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        23,
+        15
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        16,
+        20
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        17,
+        21
+      ]
+    },
+    {
+      "support": 0.024096385542168676,
+      "itemsets": [
+        17,
+        22
+      ]
+    }
+  ],
+  "association_rules": [
+    {
+      "antecedents": [
+        1
+      ],
+      "consequents": [
+        13
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.6666666666666667
+    },
+    {
+      "antecedents": [
+        13
+      ],
+      "consequents": [
+        1
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.18181818181818182
+    },
+    {
+      "antecedents": [
+        11
+      ],
+      "consequents": [
+        3
+      ],
+      "support": 0.03614457831325301,
+      "confidence": 0.5
+    },
+    {
+      "antecedents": [
+        3
+      ],
+      "consequents": [
+        11
+      ],
+      "support": 0.03614457831325301,
+      "confidence": 0.3
+    },
+    {
+      "antecedents": [
+        3
+      ],
+      "consequents": [
+        23
+      ],
+      "support": 0.03614457831325301,
+      "confidence": 0.3
+    },
+    {
+      "antecedents": [
+        23
+      ],
+      "consequents": [
+        3
+      ],
+      "support": 0.03614457831325301,
+      "confidence": 0.4285714285714286
+    },
+    {
+      "antecedents": [
+        12
+      ],
+      "consequents": [
+        7
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.28571428571428575
+    },
+    {
+      "antecedents": [
+        7
+      ],
+      "consequents": [
+        12
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.22222222222222224
+    },
+    {
+      "antecedents": [
+        8
+      ],
+      "consequents": [
+        17
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.4
+    },
+    {
+      "antecedents": [
+        17
+      ],
+      "consequents": [
+        8
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.1
+    },
+    {
+      "antecedents": [
+        9
+      ],
+      "consequents": [
+        17
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.28571428571428575
+    },
+    {
+      "antecedents": [
+        17
+      ],
+      "consequents": [
+        9
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.1
+    },
+    {
+      "antecedents": [
+        18
+      ],
+      "consequents": [
+        13
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.25
+    },
+    {
+      "antecedents": [
+        13
+      ],
+      "consequents": [
+        18
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.18181818181818182
+    },
+    {
+      "antecedents": [
+        27
+      ],
+      "consequents": [
+        13
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.6666666666666667
+    },
+    {
+      "antecedents": [
+        13
+      ],
+      "consequents": [
+        27
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.18181818181818182
+    },
+    {
+      "antecedents": [
+        28
+      ],
+      "consequents": [
+        13
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.33333333333333337
+    },
+    {
+      "antecedents": [
+        13
+      ],
+      "consequents": [
+        28
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.18181818181818182
+    },
+    {
+      "antecedents": [
+        17
+      ],
+      "consequents": [
+        15
+      ],
+      "support": 0.03614457831325301,
+      "confidence": 0.15
+    },
+    {
+      "antecedents": [
+        15
+      ],
+      "consequents": [
+        17
+      ],
+      "support": 0.03614457831325301,
+      "confidence": 0.25
+    },
+    {
+      "antecedents": [
+        18
+      ],
+      "consequents": [
+        15
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.25
+    },
+    {
+      "antecedents": [
+        15
+      ],
+      "consequents": [
+        18
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.16666666666666669
+    },
+    {
+      "antecedents": [
+        20
+      ],
+      "consequents": [
+        15
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.25
+    },
+    {
+      "antecedents": [
+        15
+      ],
+      "consequents": [
+        20
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.16666666666666669
+    },
+    {
+      "antecedents": [
+        23
+      ],
+      "consequents": [
+        15
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.28571428571428575
+    },
+    {
+      "antecedents": [
+        15
+      ],
+      "consequents": [
+        23
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.16666666666666669
+    },
+    {
+      "antecedents": [
+        16
+      ],
+      "consequents": [
+        20
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.33333333333333337
+    },
+    {
+      "antecedents": [
+        20
+      ],
+      "consequents": [
+        16
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.25
+    },
+    {
+      "antecedents": [
+        17
+      ],
+      "consequents": [
+        21
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.1
+    },
+    {
+      "antecedents": [
+        21
+      ],
+      "consequents": [
+        17
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.22222222222222224
+    },
+    {
+      "antecedents": [
+        17
+      ],
+      "consequents": [
+        22
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.1
+    },
+    {
+      "antecedents": [
+        22
+      ],
+      "consequents": [
+        17
+      ],
+      "support": 0.024096385542168676,
+      "confidence": 0.4
+    }
+  ]
+}
